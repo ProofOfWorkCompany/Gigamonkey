@@ -178,6 +178,10 @@ add_library(gigamonkey STATIC
 target_link_libraries(gigamonkey PUBLIC ${data_LIBRARIES} util ${SECP256K1_LIBRARY} ${OPENSSL_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${Boost_LIBRARIES} ${GMP_LIBRARY} ${GMPXX_LIBRARY} ${GMP_LIBRARIES} nlohmann_json::nlohmann_json )
 
 target_include_directories(gigamonkey PUBLIC include)
+        
+add_executable(BoostMiner src/gigamonkey/boost_miner.cpp)
+target_link_libraries(BoostMiner PUBLIC gigamonkey )
+target_include_directories(BoostMiner PUBLIC include)
 
 # Set C++ version
 target_compile_features(gigamonkey PUBLIC cxx_std_17)
