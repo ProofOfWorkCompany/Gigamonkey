@@ -1,0 +1,11 @@
+[requires]
+boost/1.72.0
+openssl/1.1.1k
+cryptopp/8.5.0
+nlohmann_json/3.10.0
+
+[generators]
+cmake_find_package
+
+[options]
+boost:shared=False
