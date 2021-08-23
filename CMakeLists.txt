@@ -65,7 +65,7 @@ set(Boost_USE_DEBUG_RUNTIME     OFF         CACHE BOOL "") # '-g' tag
 set(Boost_COMPILER              "-mgw49"    CACHE STRING "")
 
 # Include Boost
-find_package(Boost 1.72.0 COMPONENTS system locale  REQUIRED)
+find_package(Boost 1.76.0 COMPONENTS system locale  REQUIRED)
 
 if(Boost_FOUND)
 
@@ -87,10 +87,28 @@ message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
 
 # Find Crypto++
 find_package(CryptoPP REQUIRED)
+if(cryptopp_INCLUDE_DIRS)
+    set(CRYPTOPP_INCLUDE_DIRS ${cryptopp_INCLUDE_DIRS})
+    set(CRYPTOPP_LIBRARIES ${cryptopp_LIBRARIES})
+endif()
 if(CRYPTOPP_INCLUDE_DIRS)
 
-	message(STATUS "Crypto++ INCLUIDE DIRS: ${CRYPTOPP_INCLUDE_DIRS}")
-	include_directories(${CRYPTOPP_INCLUDE_DIRS})
+    message(STATUS "Crypto++ INCLUIDE DIRS: ${CRYPTOPP_INCLUDE_DIRS}")
+    MESSAGE(STATUS "Found Crypto++: ${CRYPTOPP_LIBRARIES}")
+    include_directories(${CRYPTOPP_INCLUDE_DIRS})
+endif()
+
+find_package(SECP256K1 REQUIRED)
+if(SECP256K1_INCLUDE_DIR)
+
+    message(STATUS "!!!! libs_SECP256K1 INCLUIDE DIRS: ${SECP256K1_INCLUDE_DIR}")
+    include_directories(${SECP256K1_INCLUDE_DIR})
+    MESSAGE(STATUS "libs_SECP256K1: ${libs_SECP256K1}")
+endif()
+
+find_package(GMP REQUIRED)
+if(gmp_INCLUDE_DIR)
+    include_directories(${gmp_INCLUDE_DIR})
 endif()
 
 # Check data library
@@ -120,8 +138,12 @@ if(nlohmann_json_FOUND)
 	message(STATUS "nlohmann_json_LIBRARIES: ${nlohmann_json_LIBRARIES}")
 
 endif()
+find_package(data REQUIRED)
+if(data_INCLUDE_DIR)
+    include_directories(${data_INCLUDE_DIR})
+endif()
 
-add_subdirectory("${PROJECT_SOURCE_DIR}/extern/data/")
+#add_subdirectory("${PROJECT_SOURCE_DIR}/extern/data/")
 
 add_library(gigamonkey STATIC 
     src/sv/utilstrencodings.cpp
@@ -169,7 +191,7 @@ add_library(gigamonkey STATIC
     src/gigamonkey/mapi/envelope.cpp
 )
 
-target_link_libraries(gigamonkey PUBLIC data util ${OPENSSL_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${Boost_LIBRARIES} ${GMPXX_LIBRARY} ${GMP_LIBRARY} nlohmann_json::nlohmann_json )
+target_link_libraries(gigamonkey PUBLIC ${data_LIBRARIES} util ${SECP256K1_LIBRARY} ${OPENSSL_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${Boost_LIBRARIES} ${gmp_LIBRARIES} nlohmann_json::nlohmann_json )
 
 target_include_directories(gigamonkey PUBLIC include)
 

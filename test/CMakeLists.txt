@@ -6,13 +6,22 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
 
+# Setup paths to outputs of conan's "cmake_find_package" generator
+set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
+set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
+
+find_package(data REQUIRED)
+if(data_INCLUDE_DIR)
+    include_directories(${data_INCLUDE_DIR})
+endif()
+
 macro(package_add_test TESTNAME)
     # create an exectuable in which the tests will be stored
     add_executable(${TESTNAME} ${ARGN})
     # link the Google test infrastructure, mocking library, and a default main fuction to
     # the test executable.  Remove g_test_main if writing your own main function.
     target_include_directories(${TESTNAME} PUBLIC .)
-    target_link_libraries(${TESTNAME} gmock_main gigamonkey data gtest_main)
+    target_link_libraries(${TESTNAME} gmock_main gigamonkey ${data_LIBRARIES} gtest_main)
     # gtest_discover_tests replaces gtest_add_tests,
     # see https://cmake.org/cmake/help/v3.10/module/GoogleTest.html for more options to pass to it
     
