@@ -95,14 +95,19 @@ endif()
 find_package(SECP256K1 REQUIRED)
 if(SECP256K1_INCLUDE_DIR)
 
-    message(STATUS "!!!! libs_SECP256K1 INCLUIDE DIRS: ${SECP256K1_INCLUDE_DIR}")
+    message(STATUS "SECP256K1 INCLUIDE DIRS: ${SECP256K1_INCLUDE_DIR}")
     include_directories(${SECP256K1_INCLUDE_DIR})
     MESSAGE(STATUS "libs_SECP256K1: ${libs_SECP256K1}")
 endif()
 
+# Find GMP
 find_package(GMP REQUIRED)
-if(gmp_INCLUDE_DIR)
-    include_directories(${gmp_INCLUDE_DIR})
+if(gmp_INCLUDE_DIRS)
+    set(GMP_INCLUDE_DIR ${gmp_INCLUDE_DIRS})
+    set(GMP_LIBRARIES ${gmp_LIBRARIES})
+endif()
+if(GMP_INCLUDE_DIR)
+    include_directories(${GMP_INCLUDE_DIR})
 endif()
 
 ## Enable testing
@@ -170,7 +175,7 @@ add_library(gigamonkey STATIC
     src/gigamonkey/mapi/envelope.cpp
 )
 
-target_link_libraries(gigamonkey PUBLIC ${data_LIBRARIES} util ${SECP256K1_LIBRARY} ${OPENSSL_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${Boost_LIBRARIES} ${gmp_LIBRARIES} nlohmann_json::nlohmann_json )
+target_link_libraries(gigamonkey PUBLIC ${data_LIBRARIES} util ${SECP256K1_LIBRARY} ${OPENSSL_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${Boost_LIBRARIES} ${GMP_LIBRARY} ${GMPXX_LIBRARY} ${GMP_LIBRARIES} nlohmann_json::nlohmann_json )
 
 target_include_directories(gigamonkey PUBLIC include)
 
