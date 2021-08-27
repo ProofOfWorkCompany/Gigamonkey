@@ -12,11 +12,9 @@ project(gigamonkey 	VERSION 1.0
 # Set cmake as import path for Find*.cmake files
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-### Require out-of-source builds
-file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
-if(EXISTS "${LOC_PATH}")
-    message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
-endif()
+# Setup paths to outputs of conan's "cmake_find_package" generator
+set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
+set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
 
 ## Check if GTests is installed. If not, install it
 
@@ -61,7 +59,7 @@ set(Boost_USE_DEBUG_RUNTIME     OFF         CACHE BOOL "") # '-g' tag
 set(Boost_COMPILER              "-mgw49"    CACHE STRING "")
 
 # Include Boost
-find_package(Boost 1.72.0 COMPONENTS system locale  REQUIRED)
+find_package(Boost 1.76.0 COMPONENTS system locale  REQUIRED)
 
 if(Boost_FOUND)
 
@@ -83,23 +81,33 @@ message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
 
 # Find Crypto++
 find_package(CryptoPP REQUIRED)
+if(cryptopp_INCLUDE_DIRS)
+    set(CRYPTOPP_INCLUDE_DIRS ${cryptopp_INCLUDE_DIRS})
+    set(CRYPTOPP_LIBRARIES ${cryptopp_LIBRARIES})
+endif()
 if(CRYPTOPP_INCLUDE_DIRS)
 
-	message(STATUS "Crypto++ INCLUIDE DIRS: ${CRYPTOPP_INCLUDE_DIRS}")
-	include_directories(${CRYPTOPP_INCLUDE_DIRS})
+    message(STATUS "Crypto++ INCLUIDE DIRS: ${CRYPTOPP_INCLUDE_DIRS}")
+    MESSAGE(STATUS "Found Crypto++: ${CRYPTOPP_LIBRARIES}")
+    include_directories(${CRYPTOPP_INCLUDE_DIRS})
 endif()
 
-# Check data library
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/extern/data/CMakeLists.txt")
-    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+find_package(SECP256K1 REQUIRED)
+if(SECP256K1_INCLUDE_DIR)
+
+    message(STATUS "SECP256K1 INCLUIDE DIRS: ${SECP256K1_INCLUDE_DIR}")
+    include_directories(${SECP256K1_INCLUDE_DIR})
+    MESSAGE(STATUS "libs_SECP256K1: ${libs_SECP256K1}")
 endif()
 
-if(NOT CHAIN_SRC_ROOT)
-	message(FATAL_ERROR "Root dir of chain's source code not defined! (-DCHAIN_SRC_ROOT=<path>)")
+# Find GMP
+find_package(GMP REQUIRED)
+if(gmp_INCLUDE_DIRS)
+    set(GMP_INCLUDE_DIR ${gmp_INCLUDE_DIRS})
+    set(GMP_LIBRARIES ${gmp_LIBRARIES})
 endif()
-message("-- Root Dir of ${CHAIN_NAME}: ${CHAIN_SRC_ROOT} (-DCHAIN_SRC_ROOT=${CHAIN_SRC_ROOT})")
-if (NOT EXISTS "${CHAIN_SRC_ROOT}/src/version.h")
-	message(FATAL_ERROR "The source code of bitcoin SV does not exist!")
+if(GMP_INCLUDE_DIR)
+    include_directories(${GMP_INCLUDE_DIR})
 endif()
 
 ## Enable testing
@@ -116,8 +124,10 @@ if(nlohmann_json_FOUND)
 	message(STATUS "nlohmann_json_LIBRARIES: ${nlohmann_json_LIBRARIES}")
 
 endif()
-
-add_subdirectory("${PROJECT_SOURCE_DIR}/extern/data/")
+find_package(data REQUIRED)
+if(data_INCLUDE_DIR)
+    include_directories(${data_INCLUDE_DIR})
+endif()
 
 add_library(gigamonkey STATIC 
     src/sv/utilstrencodings.cpp
@@ -165,7 +175,7 @@ add_library(gigamonkey STATIC
     src/gigamonkey/mapi/envelope.cpp
 )
 
-target_link_libraries(gigamonkey PUBLIC data util ${OPENSSL_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${Boost_LIBRARIES} ${GMPXX_LIBRARY} ${GMP_LIBRARY} nlohmann_json::nlohmann_json )
+target_link_libraries(gigamonkey PUBLIC ${data_LIBRARIES} util ${SECP256K1_LIBRARY} ${OPENSSL_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${Boost_LIBRARIES} ${GMP_LIBRARY} ${GMPXX_LIBRARY} ${GMP_LIBRARIES} nlohmann_json::nlohmann_json )
 
 target_include_directories(gigamonkey PUBLIC include)
 

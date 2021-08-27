@@ -2,6 +2,13 @@
 
 A library with basic Bitcoin functions. 
 
+## Instructions to build and upload a conan package from the recipe
+
+    $ conan create . proofofwork/stable
+    $ conan remote add proofofwork https://pow.jfrog.io/artifactory/api/conan/proofofwork
+    $ conan user -p PASSWORD -r proofofwork USERNAME
+    $ conan upload gigamonkey/0.1@proofofwork/stable --all -r proofofwork --confirm
+
 ## Dependencies
 
 * The Bitcoin SV reference implementation. 
