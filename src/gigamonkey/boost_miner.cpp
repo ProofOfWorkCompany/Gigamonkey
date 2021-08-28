@@ -123,13 +123,42 @@ data::uint32 random_uint32(engine& gen) {
     return dis(gen);
 }
 
+char* cmdOptionValue(char** first, char** last, const std::string& optionName) {
+    char** it = std::find(first, last, optionName);
+    if (it != last && ++it != last) {
+        return *it;
+    }
+    return nullptr;
+}
+
 int main(int arg_count, char** arg_values) {
+
+    char* contentOptionValue = cmdOptionValue(arg_values, arg_values+arg_count, "--content");
+    if (contentOptionValue != nullptr) {
+        content_hash_hex_reversed = contentOptionValue;
+        std::cout << "Found flag --content with value: " << content_hash_hex_reversed << std::endl;
+    }
+
+    char* difficultyOptionValue = cmdOptionValue(arg_values, arg_values+arg_count, "--difficulty");
+    if (difficultyOptionValue != nullptr) {
+        double difficultyDoubleValue = atof(difficultyOptionValue);
+        if (difficultyDoubleValue != 0.0f) {
+            difficulty = work::difficulty{difficultyDoubleValue};
+            std::cout << "Found flag --difficulty with value: " << difficulty << std::endl;
+        }
+    }
     
     digest256 content{content_hash_hex_reversed};
     std::cout << "Content to be boosted: " << content << std::endl;
     
     work::compact target{difficulty};
     std::cout << "target: " << target << std::endl;
+
+    char* env_miner_secret_key_WIF = std::getenv("MINER_SECRET_KEY_WIF");
+    if (env_miner_secret_key_WIF != nullptr) {
+        miner_secret_key_WIF = env_miner_secret_key_WIF;
+        std::cout << "Found MINER_SECRET_KEY_WIF set to: " << miner_secret_key_WIF;
+    }
     
     Bitcoin::secret private_key{miner_secret_key_WIF};
     Bitcoin::pubkey public_key = private_key.to_public();
