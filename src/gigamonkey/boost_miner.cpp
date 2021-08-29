@@ -1,4 +1,5 @@
 #include <gigamonkey/boost/boost.hpp>
+#include <nlohmann/json.hpp>
 
 using namespace Gigamonkey;
 
@@ -74,15 +75,15 @@ work::proof cpu_solve(const work::puzzle& p, const work::solution& initial) {
         
         if (hash < best) {
             best = hash;
-            std::cout << " hashes: " << total_hashes << std::endl;
-            std::cout << " new best hash: " << best << std::endl;
+            std::cout << "hashes: " << total_hashes << std::endl;
+            std::cout << "new best hash: " << best << std::endl;
         } else if (pr.Solution.Share.Nonce % display_increment == 0) {
             pr.Solution.Share.Timestamp = Bitcoin::timestamp::now();
-            std::cout << " hashes: " << total_hashes << std::endl;
+            std::cout << "hashes: " << total_hashes << std::endl;
         }
         
         if (hash < target) {
-            std::cout << " solution found! " << std::endl;
+            /*std::cout << " solution found! " << std::endl;*/
             return pr;
         }
         
@@ -154,10 +155,17 @@ int main(int arg_count, char** arg_values) {
     work::compact target{difficulty};
     std::cout << "target: " << target << std::endl;
 
+    json j = {
+      {"event", "target"},
+      {"payload", target}
+    };
+
+    std::cout << j.dump() << std::endl;
+
     char* env_miner_secret_key_WIF = std::getenv("MINER_SECRET_KEY_WIF");
     if (env_miner_secret_key_WIF != nullptr) {
         miner_secret_key_WIF = env_miner_secret_key_WIF;
-        std::cout << "Found MINER_SECRET_KEY_WIF set to: " << miner_secret_key_WIF;
+        /*std::cout << "Found MINER_SECRET_KEY_WIF set to: " << miner_secret_key_WIF;*/
     }
     
     Bitcoin::secret private_key{miner_secret_key_WIF};
@@ -190,10 +198,17 @@ int main(int arg_count, char** arg_values) {
             use_general_purpose_bits);
     
     std::cout << "The output script is " << output_script.write() << std::endl;
+
+    j = {
+      {"event", "outputscript"},
+      {"outputscript",output_script.write()}
+    };
+
+    std::cout << j.dump() << std::endl;
     
-    std::cout << "Or in ASM: " << Bitcoin::interpreter::ASM(output_script.write()) << std::endl;
+/*    std::cout << "Or in ASM: " << Bitcoin::interpreter::ASM(output_script.write()) << std::endl;*/
     
-    std::cout << "now let's start mining." << std::endl;
+/*    std::cout << "now let's start mining." << std::endl; */
     
     Boost::puzzle boost_puzzle{output_script, private_key};
     
@@ -209,11 +224,11 @@ int main(int arg_count, char** arg_values) {
     Boost::input_script input_script = Boost::input_script(
             signature, public_key, proof.Solution, boost_type, use_general_purpose_bits);
     
-    std::cout << "Here is the redeem script " << input_script.write() << std::endl;
+    std::cout << "solution.found " << input_script.write() << std::endl;
     
-    std::cout << "Or in ASM: " << Bitcoin::interpreter::ASM(input_script.write()) << std::endl;
+/*    std::cout << "Or in ASM: " << Bitcoin::interpreter::ASM(input_script.write()) << std::endl;*/
     
-    std::cout << "WARNING: this script uses a dummy signature. The first push needs to be replaced by a real signature. "
-        << "Since we do not have a complete transaction, we cannot have a complete signature." << std::endl;
+/*    std::cout << "WARNING: this script uses a dummy signature. The first push needs to be replaced by a real signature. "
+        << "Since we do not have a complete transaction, we cannot have a complete signature." << std::endl;*/
 }
 
