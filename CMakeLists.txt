@@ -10,7 +10,7 @@ project(gigamonkey 	VERSION 1.0
 		LANGUAGES CXX)
 
 # Set cmake as import path for Find*.cmake files
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+#set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # Setup paths to outputs of conan's "cmake_find_package" generator
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
@@ -80,7 +80,7 @@ message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
         include_directories(${OPENSSL_INCLUDE_DIR})
 
 # Find Crypto++
-find_package(CryptoPP REQUIRED)
+find_package(cryptopp REQUIRED)
 if(cryptopp_INCLUDE_DIRS)
     set(CRYPTOPP_INCLUDE_DIRS ${cryptopp_INCLUDE_DIRS})
     set(CRYPTOPP_LIBRARIES ${cryptopp_LIBRARIES})
@@ -101,7 +101,7 @@ if(SECP256K1_INCLUDE_DIR)
 endif()
 
 # Find GMP
-find_package(GMP REQUIRED)
+find_package(gmp REQUIRED)
 if(gmp_INCLUDE_DIRS)
     set(GMP_INCLUDE_DIR ${gmp_INCLUDE_DIRS})
     set(GMP_LIBRARIES ${gmp_LIBRARIES})
@@ -114,8 +114,8 @@ endif()
 include(CTest)
 
 if(PACKAGE_TESTS)
-	enable_testing()
-	add_subdirectory(test)
+	#enable_testing()
+	#add_subdirectory(test)
 endif()
 find_package(nlohmann_json 3.2.0 REQUIRED)
 if(nlohmann_json_FOUND)
