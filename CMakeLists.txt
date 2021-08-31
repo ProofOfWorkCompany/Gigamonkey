@@ -16,6 +16,8 @@ project(gigamonkey 	VERSION 1.0
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
 
+add_compile_options(-D_GLIBCXX_USE_CXX11_ABI=0)
+
 ## Check if GTests is installed. If not, install it
 
 option(PACKAGE_TESTS "Build the tests" ON)
@@ -114,8 +116,8 @@ endif()
 include(CTest)
 
 if(PACKAGE_TESTS)
-	#enable_testing()
-	#add_subdirectory(test)
+	enable_testing()
+	add_subdirectory(test)
 endif()
 find_package(nlohmann_json 3.2.0 REQUIRED)
 if(nlohmann_json_FOUND)
