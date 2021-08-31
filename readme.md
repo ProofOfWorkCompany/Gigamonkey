@@ -9,6 +9,12 @@ A library with basic Bitcoin functions.
     $ conan user -p PASSWORD -r proofofwork USERNAME
     $ conan upload gigamonkey/0.1@proofofwork/stable --all -r proofofwork --confirm
 
+## Run conan build in specific local directory
+
+    $ mkdir build
+    $ conan install . -if build
+    $ conan build . -bf build
+
 ## Dependencies
 
 * The Bitcoin SV reference implementation. 
