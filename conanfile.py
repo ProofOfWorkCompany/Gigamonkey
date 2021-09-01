@@ -17,6 +17,10 @@ class GigamonkeyConan(ConanFile):
     exports_sources = "*"
     requires = "boost/1.76.0", "openssl/1.1.1k", "cryptopp/8.5.0", "nlohmann_json/3.10.0", "gmp/6.2.1", "SECP256K1/0.1@proofofwork/stable", "data/0.1@proofofwork/stable"
 
+    def set_version(self):
+        if "CIRCLE_TAG" in environ:
+            self.version = environ.get("CIRCLE_TAG")[1:]
+
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
