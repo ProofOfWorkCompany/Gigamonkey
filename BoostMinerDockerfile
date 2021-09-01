@@ -1,0 +1,13 @@
+FROM conanio/gcc9:latest
+ARG CONAN_USERNAME
+ARG CONAN_PASSWORD
+ 
+COPY . /home/conan/gigamonkey
+WORKDIR /home/conan/gigamonkey
+RUN sudo chmod -R 777 .
+ 
+RUN conan remote add proofofwork https://pow.jfrog.io/artifactory/api/conan/proofofwork
+RUN conan user -p $CONAN_PASSWORD -r proofofwork $CONAN_USERNAME
+ 
+RUN CMAKE_BUILD_CORES_COUNT=-j8 conan install . -s compiler.libcxx=libstdc++11
+RUN CMAKE_BUILD_CORES_COUNT=-j8 conan build .

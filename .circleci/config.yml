@@ -7,6 +7,7 @@ macosBuildDefaults: &macosBuildDefaults
 linuxBuildDefaults: &linuxBuildDefaults
   docker:
     - image: conanio/gcc9:latest
+  resource_class: medium
 
 commands:
   install_macos_build_tools:
@@ -18,6 +19,9 @@ commands:
 
   build_recipe:
     parameters:
+      envVars:
+        default: ""
+        type: string
       cliParams:
         default: ""
         type: string
@@ -25,7 +29,7 @@ commands:
       - run:
           name: Build conan recipe
           command: |
-            conan create . proofofwork/stable << parameters.cliParams >>
+            << parameters.envVars >>conan create . proofofwork/stable << parameters.cliParams >>
 
   setup_conan_remote:
     steps:
@@ -53,7 +57,9 @@ commands:
     steps:
       - checkout
       - setup_conan_remote
-      - build_recipe
+      - build_recipe:
+          cliParams: "-s compiler.libcxx=libstdc++11"
+          envVars: "CMAKE_BUILD_CORES_COUNT=-j4 "
 
 jobs:
 

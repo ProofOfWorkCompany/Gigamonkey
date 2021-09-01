@@ -15,6 +15,23 @@ A library with basic Bitcoin functions.
     $ conan install . -if build
     $ conan build . -bf build
 
+## Docker linux build
+
+    Compilation process takes roughly 500MB of ram per thread. Docker has default limits of RAM per container process. It is recommended to increase RAM limits in Docker settings ui.
+    Conan recipe build also can be configured with `CMAKE_BUILD_CORES_COUNT` environment variable to set the count of threads during the compilation:
+
+    $ export CMAKE_BUILD_CORES_COUNT=-j8 
+
+    To compile conan package for linux from Dockerfile:
+
+    $ export CONAN_USERNAME=username
+    $ export CONAN_PASSWORD=password
+    $ docker build -f BoostMinerDockerfile --build-arg CONAN_USERNAME --build-arg CONAN_PASSWORD --progress=plain .
+
+## Linux build
+
+    Gigamonkey has a dependecy on C++11 features and must be built with Conan build option 'compiler.libcxx=libstdc++11'.
+
 ## Dependencies
 
 * The Bitcoin SV reference implementation. 
