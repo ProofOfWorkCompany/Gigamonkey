@@ -21,9 +21,9 @@ class GigamonkeyConan(ConanFile):
             del self.options.fPIC
 
     def build(self):
-        cmake = CMake(self)
+        cmake = CMake(self, parallel=False)
         cmake.configure()
-        cmake.build()
+        cmake.build(args=["--", "-j8"])
 
     def package(self):
         self.copy("*.h", dst="include", src="include")
