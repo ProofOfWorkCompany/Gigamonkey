@@ -23,7 +23,7 @@ class GigamonkeyConan(ConanFile):
 
     def build(self):
         if "CMAKE_BUILD_CORES_COUNT" in environ:
-            cmake = CMake(self, patallel=False)
+            cmake = CMake(self, parallel=False)
             cmake.configure()
             cmake.build(args=["--", environ.get("CMAKE_BUILD_CORES_COUNT")])
         else:
