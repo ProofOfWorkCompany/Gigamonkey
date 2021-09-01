@@ -1,4 +1,5 @@
 from conans import ConanFile, CMake
+from os import environ
 
 
 class GigamonkeyConan(ConanFile):
@@ -21,9 +22,14 @@ class GigamonkeyConan(ConanFile):
             del self.options.fPIC
 
     def build(self):
-        cmake = CMake(self, parallel=False)
-        cmake.configure()
-        cmake.build(args=["--", "-j8"])
+        if "CMAKE_BUILD_CORES_COUNT" in environ:
+            cmake = CMake(self, patallel=False)
+            cmake.configure()
+            cmake.build(args=["--", environ.get("CMAKE_BUILD_CORES_COUNT")])
+        else:
+            cmake = CMake(self)
+            cmake.configure()
+            cmake.build()
 
     def package(self):
         self.copy("*.h", dst="include", src="include")
