@@ -15,19 +15,25 @@ namespace Gigamonkey::Stratum::mining {
         static parameters serialize(const share&);
         static share deserialize(const parameters&);
         
-        submit_request(request_id id, const share& x);
+        submit_request(message_id id, const share& x);
         
         bool valid() const;
+        
+        share params() const;
         
         using request::request;
     };
     
     using submit_response = boolean_response;
     
-    inline submit_request::submit_request(request_id id, const share& x) : request{id, mining_submit, serialize(x)} {}
+    inline submit_request::submit_request(message_id id, const share& x) : request{id, mining_submit, serialize(x)} {}
     
-    inline bool submit_request::valid() const {
+    bool inline submit_request::valid() const {
         return deserialize(*this).valid();
+    }
+        
+    share inline submit_request::params() const {
+        return deserialize(request::params());
     }
     
 }
