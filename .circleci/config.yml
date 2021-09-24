@@ -15,6 +15,7 @@ commands:
       - run:
           name: Install conan and build tools
           command: |
+            rm '/usr/local/lib/python3.9/site-packages/six.py'
             brew install conan cmake pkg-config
 
   build_recipe:
