@@ -164,12 +164,13 @@ add_library(gigamonkey STATIC
     src/gigamonkey/spv.cpp
     src/gigamonkey/accounts.cpp
     src/gigamonkey/merkle/dual.cpp
+    src/gigamonkey/stratum/method.cpp
     src/gigamonkey/stratum/error.cpp
     src/gigamonkey/stratum/stratum.cpp
-    src/gigamonkey/stratum/difficulty.cpp
     src/gigamonkey/stratum/mining_subscribe.cpp
     src/gigamonkey/stratum/mining_authorize.cpp
     src/gigamonkey/stratum/mining.cpp
+    src/gigamonkey/stratum/extensions.cpp
     src/gigamonkey/boost/boost.cpp
     src/gigamonkey/mapi/mapi.cpp
     src/gigamonkey/mapi/envelope.cpp
@@ -178,10 +179,6 @@ add_library(gigamonkey STATIC
 target_link_libraries(gigamonkey PUBLIC ${data_LIBRARIES} util ${SECP256K1_LIBRARY} ${OPENSSL_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${Boost_LIBRARIES} ${GMP_LIBRARY} ${GMPXX_LIBRARY} ${GMP_LIBRARIES} nlohmann_json::nlohmann_json )
 
 target_include_directories(gigamonkey PUBLIC include)
-        
-add_executable(BoostMiner src/gigamonkey/boost_miner.cpp)
-target_link_libraries(BoostMiner PUBLIC gigamonkey )
-target_include_directories(BoostMiner PUBLIC include)
 
 # Set C++ version
 target_compile_features(gigamonkey PUBLIC cxx_std_17)

@@ -4,7 +4,7 @@ from os import environ
 
 class GigamonkeyConan(ConanFile):
     name = "gigamonkey"
-    version = "0.1"
+    version = "0.2"
     license = "<Put the package license here>"
     author = "<Put your name here> <And your email here>"
     url = "<Package recipe repository url here, for issues about the package>"
@@ -15,7 +15,7 @@ class GigamonkeyConan(ConanFile):
     default_options = {"shared": False, "fPIC": True}
     generators = "cmake_find_package"
     exports_sources = "*"
-    requires = "boost/1.76.0", "openssl/1.1.1k", "cryptopp/8.5.0", "nlohmann_json/3.10.0", "gmp/6.2.1", "SECP256K1/0.1@proofofwork/stable", "data/0.1@proofofwork/stable"
+    requires = "boost/1.76.0", "openssl/1.1.1k", "cryptopp/8.5.0", "nlohmann_json/3.10.0", "gmp/6.2.1", "SECP256K1/0.1@proofofwork/stable", "data/0.2@proofofwork/stable"
 
     def set_version(self):
         if "CIRCLE_TAG" in environ:
