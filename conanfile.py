@@ -4,7 +4,7 @@ from os import environ
 
 class GigamonkeyConan(ConanFile):
     name = "gigamonkey"
-    version = "0.2"
+    version = "0.2.1"
     license = "<Put the package license here>"
     author = "<Put your name here> <And your email here>"
     url = "<Package recipe repository url here, for issues about the package>"
@@ -21,24 +21,30 @@ class GigamonkeyConan(ConanFile):
         if "CIRCLE_TAG" in environ:
             self.version = environ.get("CIRCLE_TAG")[1:]
 
+    def configure_cmake(self):
+        if "CMAKE_BUILD_CORES_COUNT" in environ:
+            cmake = CMake(self, parallel=False)
+        else:
+            cmake = CMake(self)
+        cmake.definitions["PACKAGE_TESTS"] = "Off"
+        cmake.configure()
+        return cmake
+
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
     def build(self):
+        cmake = self.configure_cmake()
         if "CMAKE_BUILD_CORES_COUNT" in environ:
-            cmake = CMake(self, parallel=False)
-            cmake.configure()
             cmake.build(args=["--", environ.get("CMAKE_BUILD_CORES_COUNT")])
         else:
-            cmake = CMake(self)
-            cmake.configure()
             cmake.build()
 
     def package(self):
         self.copy("*.h", dst="include", src="include")
         self.copy("*.hpp", dst="include", src="include")
-        self.copy("libgigamonkey.a", dst="lib", keep_path=False)
+        self.copy("*libgigamonkey.a", dst="lib", keep_path=False)
 
     def package_info(self):
         self.cpp_info.libs = ["gigamonkey"]
