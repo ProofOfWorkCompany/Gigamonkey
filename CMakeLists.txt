@@ -13,9 +13,8 @@ project(gigamonkey 	VERSION 1.0
 #set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # Setup paths to outputs of conan's "cmake_find_package" generator
-set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
-set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
-
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
 ## Check if GTests is installed. If not, install it
 
 option(PACKAGE_TESTS "Build the tests" ON)
@@ -47,86 +46,12 @@ include(GoogleTest)
 
 endif()
 
-
-# Include libraries
-
-# Boost settings
-set(Boost_LIB_PREFIX            "lib"       CACHE STRING "")
-set(Boost_USE_MULTITHREADED     ON          CACHE BOOL "") # '-mt' flag
-set(Boost_USE_STATIC_LIBS       ON          CACHE BOOL "")
-set(Boost_USE_STATIC_RUNTIME    OFF         CACHE BOOL "") # '-s' tag
-set(Boost_USE_DEBUG_RUNTIME     OFF         CACHE BOOL "") # '-g' tag
-set(Boost_COMPILER              "-mgw49"    CACHE STRING "")
-
-# Include Boost
-find_package(Boost 1.76.0 COMPONENTS system locale  REQUIRED)
-
-if(Boost_FOUND)
-
-    message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
-    message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
-    message(STATUS "Boost_VERSION: ${Boost_VERSION}")
-
-    include_directories(${Boost_INCLUDE_DIRS})
     add_definitions("-DHAS_BOOST")
-
-endif()
-
-#find_package(ICU 60.2 COMPONENTS uc i18n REQUIRED)
-find_package(OpenSSL REQUIRED)
-message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
-        message("OpenSSL libraries: ${OPENSSL_LIBRARIES}")
-
-        include_directories(${OPENSSL_INCLUDE_DIR})
-
-# Find Crypto++
-find_package(cryptopp REQUIRED)
-if(cryptopp_INCLUDE_DIRS)
-    set(CRYPTOPP_INCLUDE_DIRS ${cryptopp_INCLUDE_DIRS})
-    set(CRYPTOPP_LIBRARIES ${cryptopp_LIBRARIES})
-endif()
-if(CRYPTOPP_INCLUDE_DIRS)
-
-    message(STATUS "Crypto++ INCLUIDE DIRS: ${CRYPTOPP_INCLUDE_DIRS}")
-    MESSAGE(STATUS "Found Crypto++: ${CRYPTOPP_LIBRARIES}")
-    include_directories(${CRYPTOPP_INCLUDE_DIRS})
-endif()
-
-find_package(SECP256K1 REQUIRED)
-if(SECP256K1_INCLUDE_DIR)
-
-    message(STATUS "SECP256K1 INCLUIDE DIRS: ${SECP256K1_INCLUDE_DIR}")
-    include_directories(${SECP256K1_INCLUDE_DIR})
-    MESSAGE(STATUS "libs_SECP256K1: ${libs_SECP256K1}")
-endif()
-
-# Find GMP
-find_package(gmp REQUIRED)
-if(gmp_INCLUDE_DIRS)
-    set(GMP_INCLUDE_DIR ${gmp_INCLUDE_DIRS})
-    set(GMP_LIBRARIES ${gmp_LIBRARIES})
-endif()
-if(GMP_INCLUDE_DIR)
-    include_directories(${GMP_INCLUDE_DIR})
-endif()
-
-## Enable testing
 include(CTest)
 
 if(PACKAGE_TESTS)
 	enable_testing()
 	add_subdirectory(test)
-endif()
-find_package(nlohmann_json 3.2.0 REQUIRED)
-if(nlohmann_json_FOUND)
-
-	message(STATUS "nlohmann_json_INCLUDE_DIRS: ${nlohmann_json_INCLUDE_DIRS}")
-	message(STATUS "nlohmann_json_LIBRARIES: ${nlohmann_json_LIBRARIES}")
-
-endif()
-find_package(data REQUIRED)
-if(data_INCLUDE_DIR)
-    include_directories(${data_INCLUDE_DIR})
 endif()
 
 add_library(gigamonkey STATIC 
@@ -176,7 +101,7 @@ add_library(gigamonkey STATIC
     src/gigamonkey/mapi/envelope.cpp
 )
 
-target_link_libraries(gigamonkey PUBLIC ${data_LIBRARIES} util ${SECP256K1_LIBRARY} ${OPENSSL_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${Boost_LIBRARIES} ${GMP_LIBRARY} ${GMPXX_LIBRARY} ${GMP_LIBRARIES} nlohmann_json::nlohmann_json )
+target_link_libraries(gigamonkey PUBLIC CONAN_PKG::data util CONAN_PKG::boost CONAN_PKG::openssl CONAN_PKG::cryptopp CONAN_PKG::nlohmann_json CONAN_PKG::gmp )
 
 target_include_directories(gigamonkey PUBLIC include)
 
